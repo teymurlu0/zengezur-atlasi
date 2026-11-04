@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
+type ApiPayload = {
+  answer?: unknown;
+  sources?: unknown;
+  mode?: unknown;
+  error?: unknown;
+};
+
 type Message = {
   id: number;
   role: "user" | "assistant";
@@ -32,6 +39,7 @@ export default function AtlasAssistant() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const focusRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const busyRef = useRef(false);
 
   useEffect(() => {
     if (open) focusRef.current?.focus();
@@ -51,7 +59,8 @@ export default function AtlasAssistant() {
 
   async function send(value: string) {
     const text = value.trim();
-    if (!text || busy) return;
+    if (!text || busyRef.current) return;
+    busyRef.current = true;
     setInput("");
     setError("");
     const newMessage: Message = { id: nextId.current++, role: "user", text };
@@ -67,24 +76,60 @@ export default function AtlasAssistant() {
         body: JSON.stringify({ message: text, history }),
         signal: controller.signal,
       });
-      const payload = await response.json() as {
-        answer?: string;
-        sources?: Message["sources"];
-        mode?: Message["mode"];
-        error?: string;
-      };
-      if (!response.ok || !payload.answer) throw new Error(payload.error ?? "Cavab alınmadı.");
+      // HTML (404/500/redirect) cavabını JSON kimi parse etmə.
+      const contentType = response.headers.get("content-type") ?? "";
+      const raw = await response.text();
+      if (!contentType.toLowerCase().includes("application/json")) {
+        throw new Error(
+          `API JSON qaytarmadı (HTTP ${response.status}). ` +
+          "app/api/assistant/route.ts faylının serverdə yayımlandığını yoxla."
+        );
+      }
+
+      let payload: ApiPayload;
+      try {
+        payload = JSON.parse(raw) as ApiPayload;
+      } catch {
+        throw new Error(`API düzgün JSON qaytarmadı (HTTP ${response.status}).`);
+      }
+
+      if (!payload || typeof payload !== "object") {
+        throw new Error("API cavabının formatı düzgün deyil.");
+      }
+      if (!response.ok) {
+        throw new Error(
+          typeof payload.error === "string" ? payload.error :
+          typeof payload.answer === "string" ? payload.answer :
+          `Server xətası: HTTP ${response.status}`
+        );
+      }
+      if (typeof payload.answer !== "string" || !payload.answer.trim()) {
+        throw new Error("API-dən etibarlı cavab alınmadı.");
+      }
+
+      const sources: NonNullable<Message["sources"]> = Array.isArray(payload.sources)
+        ? payload.sources.filter(
+            (source): source is { label: string; url: string } =>
+              !!source && typeof source === "object" &&
+              typeof source.label === "string" && typeof source.url === "string" &&
+              /^https?:\/\//i.test(source.url)
+          )
+        : [];
+      const mode: Message["mode"] =
+        payload.mode === "knowledge" || payload.mode === "ai" ? payload.mode : undefined;
+
       setMessages(old => [...old, {
-        id: nextId.current++, role: "assistant", text: payload.answer!,
-        sources: payload.sources ?? [], mode: payload.mode,
+        id: nextId.current++, role: "assistant", text: payload.answer as string,
+        sources, mode,
       }]);
     } catch (cause) {
       if (!controller.signal.aborted) {
         setError(cause instanceof Error ? cause.message : "Bağlantı xətası baş verdi.");
       }
     } finally {
-      if (!controller.signal.aborted) setBusy(false);
-      abortRef.current = null;
+      busyRef.current = false;
+      setBusy(false);
+      if (abortRef.current === controller) abortRef.current = null;
     }
   }
 
@@ -99,7 +144,7 @@ export default function AtlasAssistant() {
         <section className="atlas-chat-panel" aria-label="Atlas bələdçisi ilə söhbət">
           <div className="atlas-chat-header">
             <div>
-              <span className="atlas-chat-kicker">ZƏNGƏZUR ATLASI</span>
+              <span className="atlas-chat-kicker">ZƏNGƏZURİUM</span>
               <h2>Atlas bələdçisi</h2>
             </div>
             <button type="button" onClick={() => setOpen(false)} className="atlas-chat-close" aria-label="Söhbəti bağla">×</button>
@@ -128,7 +173,7 @@ export default function AtlasAssistant() {
               ))}
             </div>
           )}
-          {!!error && <div role="alert" className="atlas-chat-error">{error} Yenidən yoxla.</div>}
+          {!!error && <div role="alert" className="atlas-chat-error">{error}</div>}
           <form className="atlas-chat-input" onSubmit={onSubmit}>
             <label className="visually-hidden" htmlFor="atlas-question">Sualını yaz</label>
             <textarea id="atlas-question" ref={focusRef} rows={2} maxLength={1200}
