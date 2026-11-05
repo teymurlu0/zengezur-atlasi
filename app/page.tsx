@@ -6,6 +6,8 @@ import RealTerrain from "./components/RealTerrain";
 import ArchiveGallery from "./components/ArchiveGallery";
 import ViewportScene from "./components/ViewportScene";
 import AtlasAssistant from "./components/AtlasAssistant";
+import RoutePlanner from "./components/RoutePlanner";
+import CommunityChat from "./components/CommunityChat";
 import { districts, editorialSources, historyChapters, monuments, timeline, type Monument, type MonumentId } from "./data/heritage";
 
 const MonumentStudio = dynamic(() => import("./components/MonumentStudio"), {
@@ -43,9 +45,9 @@ export default function Home() {
   return (
     <main className="site" id="top">
       <header className="header">
-        <a className="brand brand-atlas" href="#top" aria-label="Zəngəzur Atlası · ana səhifə">
+        <a className="brand brand-atlas" href="#top" aria-label="ZƏNGƏZURİUM · ana səhifə">
           <span className="brand-atlas-main">Zəngəzur</span>
-          <span className="brand-atlas-side">ATLASI<span>EST. 2026</span></span>
+          <span className="brand-atlas-side">İUM<span>EST. 2026</span></span>
         </a>
         <nav className="nav" aria-label="Əsas menyu">
           <a href="#heritage">Abidələr</a>
@@ -54,6 +56,8 @@ export default function Home() {
           <a href="#archive">Arxiv</a>
           <a href="#infrastructure">Gələcək</a>
           <a href="#map">Xəritə</a>
+          <a href="#route-planner">Səfər planı</a>
+          <a href="#community">Söhbət</a>
           <a href="#sources">Mənbələr</a>
         </nav>
         <a className="header-link" href="#studio">3D kəşf et <span>↗</span></a>
@@ -61,7 +65,7 @@ export default function Home() {
 
       <section className="hero-v3">
         <div className="hero-v3-copy">
-          <span className="eyebrow"><span className="dot" /> ŞƏRQİ ZƏNGƏZUR · ABİDƏLƏR VƏ TARİX</span>
+          <span className="eyebrow"><span className="dot" /> YERLƏRİN HEKAYƏSİ</span>
           <h1>Daşda qalan <em>izlər.</em><br />Zamanda yaşayan <em>məkanlar.</em></h1>
           <p className="hero-lead">
             Arazın daş körpüləri, əsrlər əvvəl tikilmiş türbələr, yenidən qurulan yaşayış məkanları. Zəngəzurun tarixini abidələr və sənədlər danışır.
@@ -99,7 +103,7 @@ export default function Home() {
 
       <section className="section-intro" id="heritage">
         <div>
-          <span className="kicker">01 / TARİXİ MEMARLIQ</span>
+          <span className="kicker">TARİXİ ABİDƏLƏR</span>
           <h2>Üç abidə. Üç fərqli dövr.</h2>
         </div>
         <p>Araz və Bərgüşad üzərindəki körpülər, Zəngilandakı XIV əsr türbəsi. Hər abidənin öz quruluşu və öz hekayəsi var.</p>
@@ -129,7 +133,7 @@ export default function Home() {
       <section className="studio-section" id="studio">
         <div className="section-intro studio-heading">
           <div>
-            <span className="kicker">02 / 3D MEMARLIQ STUDİYASI</span>
+            <span className="kicker">ABİDƏLƏRƏ YAXINDAN BAX</span>
             <h2>Memarlığa yaxından bax.</h2>
           </div>
           <p>Xudafərinin tağları, Məmmədbəylinin səkkizguşəli planı və Laləzarın daş keçidi. Hər abidəyə ayrıca 3D baxış.</p>
@@ -157,7 +161,7 @@ export default function Home() {
       <section className="history-chapters" id="deep-history">
         <div className="section-intro history-chapters-head">
           <div>
-            <span className="kicker">03 / TARİXİ QATLAR</span>
+            <span className="kicker">KEÇMİŞDƏN SƏHİFƏLƏR</span>
             <h2>Əsrlərin yaddaşında qalan izlər.</h2>
           </div>
           <p>Daş keçidlər, kitabələr, çay vadiləri və köhnə xəritələr bölgənin müxtəlif əsrlərini bir araya gətirir.</p>
@@ -176,7 +180,7 @@ export default function Home() {
 
       <section className="story-section" id="history">
         <div className="story-title">
-          <span className="kicker">03 / TARİXİ KONTEKST</span>
+          <span className="kicker">TARİX BOYU</span>
           <h2>Keçmişdən bu günə.</h2>
           <p>
             Şərqi Zəngəzur bu gün Azərbaycanın beş rayonundan ibarət iqtisadi bölgəsidir.
@@ -205,7 +209,7 @@ export default function Home() {
       <section className="infrastructure-section" id="infrastructure">
         <div className="section-intro infra-head">
           <div>
-            <span className="kicker">05 / İNFRASTRUKTUR VƏ GƏLƏCƏK</span>
+            <span className="kicker">YOLLAR VƏ İNKİŞAF</span>
             <h2>Dəyişən yollar. Yeni əlaqələr.</h2>
           </div>
           <p>
@@ -225,7 +229,7 @@ export default function Home() {
       <section className="district-section" id="districts">
         <div className="section-intro district-intro">
           <div>
-            <span className="kicker">06 / COĞRAFİYA</span>
+            <span className="kicker">BÖLGƏNİ TANI</span>
             <h2>Şərqi Zəngəzurun beş rayonu.</h2>
           </div>
           <p>Cəbrayıldan Kəlbəcərə uzanan beş rayon — fərqli landşaftlar və tarixi məkanlar.</p>
@@ -245,7 +249,7 @@ export default function Home() {
       <section className="map-section" id="map">
         <div className="section-intro">
           <div>
-            <span className="kicker">07 / COĞRAFİ RELYEF</span>
+            <span className="kicker">DAĞLAR VƏ VADİLƏR</span>
             <h2>Zəngilanın 3D ərazi görünüşü.</h2>
           </div>
           <p>Araz vadisinə yaxın yüksəkliklər və dağ silsilələri — Zəngilan ətrafından bir relyef fraqmenti.</p>
@@ -258,9 +262,13 @@ export default function Home() {
         </div>
       </section>
 
+      <RoutePlanner />
+
+      <CommunityChat />
+
       <section className="source-section" id="sources">
         <div>
-          <span className="kicker">08 / SƏNƏDLƏR VƏ MƏNBƏLƏR</span>
+          <span className="kicker">İSTİNADLAR</span>
           <h2>Məlumatlar haradandır?</h2>
           <p>Köhnə xəritələrdən rəsmi sənədlərə qədər bütün əsas istinadlar burada toplanıb.</p>
         </div>
@@ -274,7 +282,7 @@ export default function Home() {
       </section>
 
       <footer className="footer">
-        <div><strong>Zəngəzur Atlası</strong><span>Tarix · Memarlıq · Coğrafiya</span></div>
+        <div><strong>ZƏNGƏZURİUM</strong><span>Tarix · Memarlıq · Coğrafiya</span></div>
         <p>Arxiv, abidələr və memarlıq təsvirləri. <a href="#sources">Mənbələr və model qeydləri ↗</a></p>
         <a href="#top">Yuxarı ↑</a>
       </footer>

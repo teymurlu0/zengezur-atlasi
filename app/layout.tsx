@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
@@ -9,16 +10,22 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Zəngəzur Atlası | Abidələr, tarix, 3D",
+  title: "ZƏNGƏZURİUM | Tarix, abidələr və səfər",
   description:
     "Şərqi Zəngəzurun təbiətini, tarixini və yenidən qurulmasını interaktiv mühitdə kəşf edin.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="az" className={roboto.variable}>
+    <html
+      lang="az"
+      className={roboto.variable}
+      suppressHydrationWarning
+    >
       <body>{children}</body>
     </html>
   );
